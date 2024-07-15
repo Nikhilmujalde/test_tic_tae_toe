@@ -10,7 +10,7 @@ console.log(`Configured port: ${PORT}`);
 
 const httpServer = createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Server is running');
+  // res.end('Server is running');
 });
 
 const io = new Server(httpServer, {
