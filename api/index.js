@@ -6,7 +6,13 @@ dotenv.config(); // Load environment variables from .env file
 
 const PORT = process.env.PORT || 3001;
 
-const httpServer = createServer();
+console.log(`Configured port: ${PORT}`);
+
+const httpServer = createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Server is running');
+});
+
 const io = new Server(httpServer, {
   cors: {
     origin: '*', // Allow all origins
@@ -14,10 +20,13 @@ const io = new Server(httpServer, {
   },
 });
 
+console.log('Socket.io server created');
+
 const allUsers = {};
 const allRooms = [];
 
 io.on('connection', (socket) => {
+  console.log(`New connection: ${socket.id}`);
   allUsers[socket.id] = {
     socket: socket,
     online: true,
