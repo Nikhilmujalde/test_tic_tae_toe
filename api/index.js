@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config(); // Load environment variables from .env file
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 const httpServer = createServer();
 const io = new Server(httpServer, {

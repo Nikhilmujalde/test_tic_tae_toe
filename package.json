@@ -14,7 +14,7 @@
   "dependencies": {
     "express": "^4.19.2",
     "socket.io": "^4.7.5",
-    "http": "^0.0.0",
+    "http": "^0.0.1-security",
     "dotenv": "^16.4.5"
   }
 }
