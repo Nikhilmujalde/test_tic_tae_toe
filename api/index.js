@@ -1,3 +1,6 @@
+import express from 'express';
+import cors from 'cors'
+import path from 'path';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import dotenv from 'dotenv';
@@ -7,21 +10,30 @@ dotenv.config(); // Load environment variables from .env file
 const PORT = process.env.PORT || 3001;
 
 console.log(`Configured port: ${PORT}`);
+const app = express();
+const server = createServer(app);
+const io = new Server(server,{
+  cors:{
+    origin:"*",
+    methods:["GET","POST"],
+    credentials:true,  
+  }
+})
+const __dirname = path.resolve()
+// const httpServer = createServer((req, res) => {
+//   res.writeHead(200, { 'Content-Type': 'text/plain' });
+//   // res.end('Server is running');
+// });
 
-const httpServer = createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  // res.end('Server is running');
-});
-
-const io = new Server(httpServer, {
-  cors: {
-    origin: '*', // Allow all origins
-    methods: ['GET', 'POST'],
-  },
-});
+// const io = new Server(httpServer, {
+//   cors: {
+//     origin: '*', // Allow all origins
+//     methods: ['GET', 'POST'],
+//   },
+// });
 
 console.log('Socket.io server created');
-
+app.use(cors())
 const allUsers = {};
 const allRooms = [];
 
@@ -99,6 +111,13 @@ io.on('connection', (socket) => {
   });
 });
 
-httpServer.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
-});
+server.listen(PORT,()=>{
+  console.log(`Server is running on port ${PORT}`)
+})
+// httpServer.listen(PORT, () => {
+//   console.log(`Server is listening on port ${PORT}`);
+// });
+app.use(express.static(path.join(__dirname,'/client/dist')))
+app.get('*',(req,res)=>{
+  res.sendFile(path.join(__dirname,'client','dist','index.html'))
+})
