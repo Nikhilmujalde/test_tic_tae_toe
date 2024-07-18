@@ -74,6 +74,7 @@ const App = () => {
     }
   }, [gameState]);
 
+  // 2.3
   const takePlayerName = async () => {
     const result = await Swal.fire({
       title: "Enter your name",
@@ -93,6 +94,7 @@ const App = () => {
     setFinishetState("opponentLeftMatch");
   });
 
+  // 5 we are getting this state from square and id will be from 1 t0 9 as to which part of the square was played
   socket?.on("playerMoveFromServer", (data) => {
     const id = data.state.id;
     setGameState((prevState) => {
@@ -102,36 +104,43 @@ const App = () => {
       newState[rowIndex][colIndex] = data.state.sign;
       return newState;
     });
+    // for toggling between cross and circle
     setCurrentPlayer(data.state.sign === "circle" ? "cross" : "circle");
   });
 
+  // 2.1 checking if socket is connected connect is predefined in client side and setting setPlayonline to true
   socket?.on("connect", function () {
     setPlayOnline(true);
   });
 
+  //4 if from the server we do not found an opponent we will wait
   socket?.on("OpponentNotFound", function () {
     setOpponentName(false);
   });
-
+  //4 here what if we found opponent 
   socket?.on("OpponentFound", function (data) {
+    // now we setting who plays circle and cross
     setPlayingAs(data.playingAs);
     setOpponentName(data.opponentName);
   });
 
+  // 2.2after clicking playonline we will take player name
   async function playOnlineClick() {
     const result = await takePlayerName();
-
+    // console.log(result)
+    // after entering the player name we will get result isconfirmed to be true 
     if (!result.isConfirmed) {
       return;
     }
 
     const username = result.value;
     setPlayerName(username);
-
-    const newSocket = io("http://localhost:3001", {
+    //1 joining to io creating new socket 
+    const newSocket = io("http://localhost:3000", {
       autoConnect: true,
     });
 
+    // 3 after connection we will now send request to play and will send the playername
     newSocket?.emit("request_to_play", {
       playerName: username,
     });
